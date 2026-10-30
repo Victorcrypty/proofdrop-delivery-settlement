@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Settlement logic lives behind the `SettlementAdapter` interface in `src/lib/settlement/`; UI imports only `settlement` from its index, so a real BCH/XO adapter can replace the mock without UI changes.
+- Simulated references must be labeled "Demo reference" and never resemble real transaction IDs; demo orders persist only in browser localStorage.
