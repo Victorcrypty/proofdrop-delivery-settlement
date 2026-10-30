@@ -138,3 +138,14 @@ export function Notice({ tone, children }: { tone: "blocked" | "ok"; children: R
 }
 
 export const fmtDate = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+
+export function OrderMissing() {
+  return (
+    <Shell>
+      <div className="panel mx-auto max-w-lg p-8 text-center">
+        <p>This demo order isn't stored in this browser.</p>
+        <Link to="/" className="btn btn-primary mt-4">Back to dashboard</Link>
+      </div>
+    </Shell>
+  );
+}

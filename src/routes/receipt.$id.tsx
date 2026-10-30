@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FlaskConical } from "lucide-react";
-import { Amounts, Row, Shell, StatusBadge, fmtDate } from "@/components/proofdrop";
+import { Amounts, Row, Shell, StatusBadge, fmtDate , OrderMissing } from "@/components/proofdrop";
 import { useDemo, useHydrated } from "@/lib/demo-store";
-import { OrderMissing } from "./orders.$id";
 
 export const Route = createFileRoute("/receipt/$id")({
   head: () => ({

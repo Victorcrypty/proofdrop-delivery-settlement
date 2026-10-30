@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { FileText, KeyRound, Lock, PackageCheck, Truck, Wallet, Ban } from "lucide-react";
-import { Amounts, Conditions, Notice, Row, Shell, StatusBadge, Timeline, fmtDate } from "@/components/proofdrop";
+import { Amounts, Conditions, Notice, OrderMissing, Row, Shell, StatusBadge, Timeline, fmtDate } from "@/components/proofdrop";
 import { demo, useDemo, useHydrated } from "@/lib/demo-store";
 import { fmtBCH, settlement, type Actor, type Order, type Result } from "@/lib/settlement";
 import { cn } from "@/lib/utils";
@@ -24,17 +24,6 @@ export const Route = createFileRoute("/orders/$id")({
   }),
   component: OrderPage,
 });
-
-export function OrderMissing() {
-  return (
-    <Shell>
-      <div className="panel mx-auto max-w-lg p-8 text-center">
-        <p>This demo order isn't stored in this browser.</p>
-        <Link to="/" className="btn btn-primary mt-4">Back to dashboard</Link>
-      </div>
-    </Shell>
-  );
-}
 
 function OrderPage() {
   const { id } = Route.useParams();

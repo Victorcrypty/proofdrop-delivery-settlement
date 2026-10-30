@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as ReviewRouteImport } from './routes/review'
+import { Route as ConfirmIdRouteImport } from './routes/confirm.$id'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as ReceiptIdRouteImport } from './routes/receipt.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +31,81 @@ const ReviewRoute = ReviewRouteImport.update({
   path: '/review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfirmIdRoute = ConfirmIdRouteImport.update({
+  id: '/confirm/$id',
+  path: '/confirm/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReceiptIdRoute = ReceiptIdRouteImport.update({
+  id: '/receipt/$id',
+  path: '/receipt/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/review': typeof ReviewRoute
+  '/confirm/$id': typeof ConfirmIdRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/receipt/$id': typeof ReceiptIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/review': typeof ReviewRoute
+  '/confirm/$id': typeof ConfirmIdRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/receipt/$id': typeof ReceiptIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/review': typeof ReviewRoute
+  '/confirm/$id': typeof ConfirmIdRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/receipt/$id': typeof ReceiptIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create' | '/review'
+  fullPaths:
+    | '/'
+    | '/create'
+    | '/review'
+    | '/confirm/$id'
+    | '/orders/$id'
+    | '/receipt/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create' | '/review'
-  id: '__root__' | '/' | '/create' | '/review'
+  to:
+    | '/'
+    | '/create'
+    | '/review'
+    | '/confirm/$id'
+    | '/orders/$id'
+    | '/receipt/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/create'
+    | '/review'
+    | '/confirm/$id'
+    | '/orders/$id'
+    | '/receipt/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateRoute: typeof CreateRoute
   ReviewRoute: typeof ReviewRoute
+  ConfirmIdRoute: typeof ConfirmIdRoute
+  OrdersIdRoute: typeof OrdersIdRoute
+  ReceiptIdRoute: typeof ReceiptIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +131,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/confirm/$id': {
+      id: '/confirm/$id'
+      path: '/confirm/$id'
+      fullPath: '/confirm/$id'
+      preLoaderRoute: typeof ConfirmIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/receipt/$id': {
+      id: '/receipt/$id'
+      path: '/receipt/$id'
+      fullPath: '/receipt/$id'
+      preLoaderRoute: typeof ReceiptIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +159,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateRoute: CreateRoute,
   ReviewRoute: ReviewRoute,
+  ConfirmIdRoute: ConfirmIdRoute,
+  OrdersIdRoute: OrdersIdRoute,
+  ReceiptIdRoute: ReceiptIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

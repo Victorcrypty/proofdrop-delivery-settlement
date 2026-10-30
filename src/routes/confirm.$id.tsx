@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { KeyRound, ShieldCheck } from "lucide-react";
-import { Amounts, Notice, Shell, StatusBadge, Timeline } from "@/components/proofdrop";
+import { Amounts, Notice, Shell, StatusBadge, Timeline , OrderMissing } from "@/components/proofdrop";
 import { demo, useDemo, useHydrated } from "@/lib/demo-store";
 import { settlement } from "@/lib/settlement";
-import { OrderMissing } from "./orders.$id";
 
 export const Route = createFileRoute("/confirm/$id")({
   head: () => ({
