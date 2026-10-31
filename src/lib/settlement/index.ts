@@ -5,6 +5,7 @@ import type { SettlementAdapter } from "./types";
 
 export const settlement: SettlementAdapter = mockAdapter;
 export * from "./types";
+export { refundEligibility } from "./refund";
 
 export const toSats = (bch: string) => Math.round(parseFloat(bch || "0") * 1e8);
 export const fmtBCH = (sats: number) => `${Number((sats / 1e8).toFixed(8))} BCH`;

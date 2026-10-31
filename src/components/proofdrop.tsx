@@ -87,6 +87,13 @@ export function Timeline({ status, deadlinePassed }: { status: SettlementStatus;
           </li>
         );
       })}
+      {status === "refunded" && (
+        <li className="mt-5 flex items-center gap-3" aria-label="Refunded">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-destructive-soft text-destructive"><Ban className="h-4 w-4" /></span>
+          <span className="text-sm font-semibold">Refunded</span>
+          <span className="ml-auto text-xs text-muted-foreground">Simulated refund to buyer</span>
+        </li>
+      )}
     </ol>
   );
 }

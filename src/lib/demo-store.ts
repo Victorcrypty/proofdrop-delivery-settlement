@@ -56,6 +56,21 @@ export const demo = {
     return r;
   },
   // Seller dispatch is a coordination event, not a settlement state change.
+  async simulateDeadlinePassed(id: string, actor: Actor): Promise<Result> {
+    if (settlement.mode !== "demo") return { ok: false, reason: "Deadline simulation is available only in demo mode." };
+    return demo.run(id, async (o) => {
+      if (actor !== "buyer") return { ok: false, reason: "Only the buyer demo role can simulate the refund deadline." };
+      if (o.status !== "payment_locked") return { ok: false, reason: "Deadline simulation requires locked payment before courier collection." };
+      if (o.demoDeadlinePassed) return { ok: false, reason: "The prototype deadline has already been simulated as passed." };
+      return {
+        ok: true,
+        order: { ...o, demoDeadlinePassed: true, events: [...o.events, {
+          at: new Date().toISOString(), actor: "system", label: "Prototype test: simulate deadline passed (local only; agreed deadline unchanged)",
+        }] },
+      };
+    });
+  },
+  // Seller dispatch is a coordination event, not a settlement state change.
   async dispatch(id: string, actor: Actor): Promise<Result> {
     return demo.run(id, async (o) => {
       if (actor !== "seller") return { ok: false, reason: "Only the seller can confirm dispatch." };

@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { FileText, KeyRound, Lock, PackageCheck, Truck, Wallet, Ban } from "lucide-react";
+import { FileText, KeyRound, Lock, PackageCheck, Truck, Wallet, Ban, FlaskConical } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Amounts, Conditions, Notice, OrderMissing, Row, Shell, StatusBadge, Timeline, fmtDate } from "@/components/proofdrop";
 import { demo, useDemo, useHydrated } from "@/lib/demo-store";
-import { fmtBCH, settlement, type Actor, type Order, type Result } from "@/lib/settlement";
+import { fmtBCH, refundEligibility, settlement, type Actor, type Order, type Result } from "@/lib/settlement";
 import { cn } from "@/lib/utils";
 
 type Role = "buyer" | "seller" | "courier";
@@ -41,8 +42,7 @@ function OrderPage() {
     const r = await demo.run(o.id, fn);
     setMsg(r.ok ? { tone: "ok", text: success } : { tone: "blocked", text: r.reason });
   };
-  const deadlinePassed = o.status === "payment_locked" && Date.now() > new Date(o.deadline).getTime();
-  const actor: Actor = role;
+  const deadlinePassed = refundEligibility(o).allowed;
 
   return (
     <Shell>
@@ -66,6 +66,15 @@ function OrderPage() {
             ))}
           </div>
         </div>
+        {settlement.mode === "demo" && role === "buyer" && o.status === "payment_locked" && (
+          <div className="mt-4 space-y-2 border-t border-border pt-4">
+            <Button variant="outline" className="h-auto max-w-full whitespace-normal text-left" disabled={o.demoDeadlinePassed} onClick={() => demo.simulateDeadlinePassed(o.id, role).then((r) => setMsg(r.ok ? { tone: "ok", text: "Deadline passing simulated for this demo order only. The agreed deadline is unchanged; no blockchain deadline was changed." } : { tone: "blocked", text: r.reason }))}>
+              <FlaskConical /> Prototype test: simulate deadline passed
+            </Button>
+            <p className="text-xs text-subtle">Local demo only. Does not change the agreed delivery deadline or any real blockchain deadline.</p>
+            {o.demoDeadlinePassed && <p className="text-xs font-medium text-primary">Prototype deadline: simulated as passed.</p>}
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -162,7 +171,9 @@ function OrderPage() {
 }
 
 function BuyerActions({ o, act }: { o: Order; act: (fn: (o: Order) => Promise<Result>, s: string) => void }) {
+  const refund = refundEligibility(o);
   return (
+    <div className="space-y-3">
     <div className="flex flex-wrap gap-2">
       {o.status === "order_created" && (
         <button className="btn btn-primary" onClick={() => act((x) => settlement.fundSettlement(x, "buyer"), "Simulated payment locked. No real BCH was moved.")}>
@@ -177,11 +188,11 @@ function BuyerActions({ o, act }: { o: Order; act: (fn: (o: Order) => Promise<Re
       <button className="btn btn-ghost" onClick={() => act((x) => settlement.releaseSettlement(x, "buyer"), "Simulated settlement released.")}>
         Approve release
       </button>
-      {o.status === "payment_locked" && (
-        <button className="btn btn-ghost" onClick={() => act((x) => settlement.requestRefund(x, "buyer"), "Simulated refund issued.")}>
-          <Ban className="h-4 w-4" /> Request refund
-        </button>
-      )}
+      <Button variant="ghost" className="h-auto whitespace-normal" onClick={() => act((x) => settlement.requestRefund(x, "buyer"), "Simulated refund issued. No real BCH was moved.")}>
+        <Ban className="h-4 w-4" /> Request simulated refund
+      </Button>
+    </div>
+    <p className="text-sm text-muted-foreground">{refund.reason}</p>
     </div>
   );
 }
