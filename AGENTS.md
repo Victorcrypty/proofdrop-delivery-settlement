@@ -11,3 +11,4 @@
 
 - Settlement logic lives behind the `SettlementAdapter` interface in `src/lib/settlement/`; UI imports only `settlement` from its index, so a real BCH/XO adapter can replace the mock without UI changes.
 - Simulated references must be labeled "Demo reference" and never resemble real transaction IDs; demo orders persist only in browser localStorage.
+- Generate the demo handoff code in settlement creation, preserve it in later transitions, and gate its rendered value by Seller role; this keeps persistence and visibility independent of navigation.

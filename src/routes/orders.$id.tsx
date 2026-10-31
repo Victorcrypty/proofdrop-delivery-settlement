@@ -108,6 +108,17 @@ function OrderPage() {
             </div>
           </section>
 
+          {role === "seller" && o.deliveryCode && (
+            <section className="panel space-y-3 p-6" aria-labelledby="demo-delivery-code">
+              <h2 id="demo-delivery-code" className="flex items-center gap-2 font-semibold">
+                <KeyRound className="h-4 w-4" /> Demo delivery code
+              </h2>
+              <p className="font-mono text-3xl font-semibold" data-testid="demo-delivery-code">{o.deliveryCode}</p>
+              <p className="text-sm text-muted-foreground">For this prototype, share this code with the buyer after the item is handed over. In production, the code would be delivered through a protected channel.</p>
+              {o.codeUsed && <p className="text-sm text-muted-foreground">Used — delivery confirmation is complete.</p>}
+            </section>
+          )}
+
           <section className="panel p-6">
             <h2 className="mb-3 font-semibold">Parties & amounts</h2>
             <div className="grid gap-6 sm:grid-cols-2">
@@ -196,7 +207,7 @@ function RoleInfo({ o, role }: { o: Order; role: Role }) {
     <div className={box}>
       {o.status === "order_created" && "Fund the simulated settlement to lock payment."}
       {o.status === "payment_locked" && (
-        <>Your one-time delivery code: <span className="font-mono text-base font-semibold tracking-widest">{o.deliveryCode}</span>. Keep it private and enter it only once the item is in your hands.</>
+        <>Payment is locked. Await courier collection and the code provided at handoff.</>
       )}
       {o.status === "collection_confirmed" && "The courier has collected the item. When it arrives, enter your delivery code."}
       {o.status === "delivery_confirmed" && "Delivery confirmed. Approve the simulated release to pay seller and courier."}

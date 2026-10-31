@@ -48,7 +48,7 @@ export const mockAdapter: SettlementAdapter = {
       status: "initial",
       createdAt: new Date().toISOString(),
       dispatched: false,
-      deliveryCode: null,
+      deliveryCode: rand(6, "0123456789"),
       codeUsed: false,
       events: [],
     };
@@ -58,9 +58,7 @@ export const mockAdapter: SettlementAdapter = {
   async fundSettlement(order, actor) {
     if (actor !== "buyer") return fail("Only the buyer can fund the settlement.");
     if (order.status !== "order_created") return fail("This settlement has already been funded.");
-    return step(order, "payment_locked", "buyer", "Payment locked (simulated)", {
-      deliveryCode: rand(6, "0123456789"),
-    });
+    return step(order, "payment_locked", "buyer", "Payment locked (simulated)");
   },
 
   async confirmCollection(order, actor) {
@@ -77,7 +75,8 @@ export const mockAdapter: SettlementAdapter = {
       return fail("Delivery cannot be confirmed before courier collection is confirmed.");
     if (actor !== "buyer") return fail("Delivery is confirmed by the buyer, not the courier or seller.");
     if (order.codeUsed) return fail("This delivery code has already been used. It cannot be used twice.");
-    if (code.trim() !== order.deliveryCode) return fail("That delivery code does not match this order.");
+    if (!/^\d{6}$/.test(code.trim()) || code.trim() !== order.deliveryCode)
+      return fail("That delivery code does not match this order.");
     return step(order, "delivery_confirmed", "buyer", "Buyer-confirmed delivery", { codeUsed: true });
   },
 

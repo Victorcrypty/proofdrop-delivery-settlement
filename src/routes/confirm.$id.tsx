@@ -4,6 +4,7 @@ import { KeyRound, ShieldCheck } from "lucide-react";
 import { Amounts, Notice, Shell, StatusBadge, Timeline , OrderMissing } from "@/components/proofdrop";
 import { demo, useDemo, useHydrated } from "@/lib/demo-store";
 import { settlement } from "@/lib/settlement";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/confirm/$id")({
   head: () => ({
@@ -56,11 +57,12 @@ function Confirm() {
           <form onSubmit={confirm} className="space-y-3">
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium">One-time delivery code</span>
-              <input className="field font-mono tracking-widest" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value)} placeholder="6 digits" />
+              <input className="field font-mono tracking-widest" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value)} placeholder="6 digits" aria-describedby="delivery-code-help" />
             </label>
-            <button className="btn btn-primary w-full"><KeyRound className="h-4 w-4" /> Confirm delivery</button>
+            <p id="delivery-code-help" className="text-sm text-muted-foreground">Enter the one time code provided at handoff.</p>
+            <Button type="submit" className="btn btn-primary w-full"><KeyRound className="h-4 w-4" /> Confirm delivery</Button>
           </form>
-          <button onClick={release} className="btn btn-ghost w-full"><ShieldCheck className="h-4 w-4" /> Approve simulated release</button>
+          <Button variant="ghost" onClick={release} className="btn btn-ghost w-full"><ShieldCheck className="h-4 w-4" /> Approve simulated release</Button>
           {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/orders/$id" params={{ id }} search={{ role: "buyer" }} className="text-accent-foreground underline">Back to order</Link>
