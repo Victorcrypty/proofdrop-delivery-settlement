@@ -41,6 +41,8 @@ export interface Order extends OrderInput {
   dispatched: boolean;
   deliveryCode: string | null;
   codeUsed: boolean;
+  /** Local prototype clock override. Never changes the agreed deadline. */
+  demoDeadlinePassed?: boolean;
   events: OrderEvent[];
 }
 

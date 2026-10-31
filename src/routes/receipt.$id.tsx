@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { FlaskConical } from "lucide-react";
 import { Amounts, Row, Shell, StatusBadge, fmtDate , OrderMissing } from "@/components/proofdrop";
 import { useDemo, useHydrated } from "@/lib/demo-store";
+import { fmtBCH } from "@/lib/settlement";
 
 export const Route = createFileRoute("/receipt/$id")({
   head: () => ({
@@ -43,6 +44,7 @@ function Receipt() {
           <Row k="Courier" v={o.courierName} />
         </div>
         <div className="mt-2"><Amounts o={o} /></div>
+        {o.status === "refunded" && <div className="mt-4 border-t border-border pt-4 text-sm"><Row k="Simulated refund to buyer" v={fmtBCH(o.itemSats + o.courierFeeSats)} strong /><p className="text-muted-foreground">No real BCH was moved. Seller payment and courier fee were not released.</p></div>}
         <h2 className="mt-8 mb-3 font-semibold">Confirmation history</h2>
         <ol className="space-y-3">
           {o.events.map((e, i) => (

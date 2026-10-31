@@ -11,6 +11,59 @@ const ok = (r: Result): Order => { if (!r.ok) throw new Error(r.reason); return 
 const codeOf = (o: Order): string => { if (!o.deliveryCode) throw new Error("Missing delivery code"); return o.deliveryCode; };
 
 describe("mock settlement rules", () => {
+  const deadline = "2026-10-31T12:00:00.000Z";
+  const before = new Date("2026-10-31T11:59:59.000Z");
+  const after = new Date("2026-10-31T12:00:01.000Z");
+  const locked = async () => ok(await a.fundSettlement(ok(await a.createSettlement({ ...input, deadline })), "buyer"));
+
+  it("blocks refunds before and exactly at the deadline", async () => {
+    const o = await locked();
+    expect(await a.requestRefund(o, "buyer", before)).toEqual({ ok: false, reason: "Refund unavailable until the delivery deadline passes." });
+    expect((await a.requestRefund(o, "buyer", new Date(deadline))).ok).toBe(false);
+    expect(o.status).toBe("payment_locked");
+  });
+  it("refunds after deadline without collection and records a demo reference", async () => {
+    const o = await locked();
+    const refunded = ok(await a.requestRefund(o, "buyer", after));
+    expect(refunded.status).toBe("refunded");
+    expect(refunded.events.at(-1)?.actor).toBe("buyer");
+    expect(refunded.events.at(-1)?.demoRef).toMatch(/^DEMO-[A-Z2-9]{4}-[A-Z2-9]{4}$/);
+    expect(refunded.deliveryCode).toBe(o.deliveryCode);
+    expect(refunded.itemSats + refunded.courierFeeSats).toBe(1_700_000);
+  });
+  it("blocks refund after collection even with simulated deadline", async () => {
+    const o = ok(await a.confirmCollection({ ...await locked(), demoDeadlinePassed: true }, "courier"));
+    expect(await a.requestRefund(o, "buyer", after)).toEqual({ ok: false, reason: "Refund unavailable because courier collection has already been confirmed." });
+  });
+  it("blocks refund after settlement release", async () => {
+    let o = ok(await a.confirmCollection(await locked(), "courier"));
+    o = ok(await a.confirmDelivery(o, "buyer", codeOf(o)));
+    o = ok(await a.releaseSettlement(o, "buyer"));
+    expect(await a.requestRefund(o, "buyer", after)).toEqual({ ok: false, reason: "Refund unavailable because settlement has already been released." });
+  });
+  it("blocks duplicate refund without adding a second event", async () => {
+    const o = ok(await a.requestRefund(await locked(), "buyer", after));
+    const count = o.events.length;
+    expect(await a.requestRefund(o, "buyer", after)).toEqual({ ok: false, reason: "This order has already been refunded. A refund cannot be executed twice." });
+    expect(o.events.length).toBe(count);
+    expect((await a.releaseSettlement(o, "buyer")).ok).toBe(false);
+    expect((await a.confirmCollection(o, "courier")).ok).toBe(false);
+    expect((await a.confirmDelivery(o, "buyer", codeOf(o))).ok).toBe(false);
+  });
+  it("allows local simulated deadline without mutating the agreed deadline", async () => {
+    const o = { ...await locked(), demoDeadlinePassed: true };
+    expect(ok(await a.requestRefund(o, "buyer", before)).status).toBe("refunded");
+    expect(o.deadline).toBe(deadline);
+  });
+  it("blocks seller and courier refunds even after deadline", async () => {
+    const o = await locked();
+    for (const role of ["seller", "courier"] as const)
+      expect(await a.requestRefund(o, role, after)).toEqual({ ok: false, reason: "Only the buyer can request a refund." });
+  });
+  it("blocks refunds when no payment is locked", async () => {
+    const o = ok(await a.createSettlement({ ...input, deadline }));
+    expect(await a.requestRefund(o, "buyer", after)).toEqual({ ok: false, reason: "There is no locked payment to refund." });
+  });
   it("runs the full flow to release", async () => {
     let o = ok(await a.createSettlement(input));
     o = ok(await a.fundSettlement(o, "buyer"));

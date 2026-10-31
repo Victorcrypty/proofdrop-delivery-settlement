@@ -1,5 +1,6 @@
 import type { Actor, Order, OrderInput, Result, SettlementAdapter } from "./types";
 import { STATUS_ORDER } from "./types";
+import { refundEligibility } from "./refund";
 
 // LOCAL MOCK ADAPTER — moves no funds and touches no blockchain.
 // Every reference it produces is a "Demo reference" (DEMO-… prefix), never a txid.
@@ -101,14 +102,8 @@ export const mockAdapter: SettlementAdapter = {
 
   async requestRefund(order, actor, now = new Date()) {
     if (actor !== "buyer") return fail("Only the buyer can request a refund.");
-    if (order.status !== "payment_locked")
-      return fail(
-        idx(order) < at("payment_locked")
-          ? "There is no locked payment to refund."
-          : "A refund is not available because collection was already confirmed.",
-      );
-    if (now.getTime() < new Date(order.deadline).getTime())
-      return fail("A refund can only be requested after the delivery deadline passes without collection.");
+    const eligibility = refundEligibility(order, now);
+    if (!eligibility.allowed) return fail(eligibility.reason);
     return step(order, "refunded", "buyer", "Refund issued (simulated)");
   },
 

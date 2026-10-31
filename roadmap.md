@@ -1,5 +1,5 @@
-# Delivery-code fix
-- [x] Create the code once per order and preserve confirmation guards.
-- [x] Show Seller-only code and manual Buyer helper.
-- [x] Test generation, persistence, incorrect/early/repeated confirmations and existing settlement flow.
-- [x] Verify the complete flow in the app and report changed files.
+# Prototype refund path
+- [x] Add refund guards and persistent demo-only deadline simulation without changing the agreed deadline.
+- [x] Show buyer refund explanations, refunded timeline, and receipt activity.
+- [x] Test refund rules and refresh persistence; rerun settlement and delivery-code tests (21 tests passed).
+- [x] Verify refund and normal settlement flows in the app and report changes.
