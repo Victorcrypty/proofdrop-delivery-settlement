@@ -10,7 +10,7 @@ type Role = "buyer" | "seller" | "courier";
 
 export const Route = createFileRoute("/orders/$id")({
   validateSearch: (s: Record<string, unknown>): { role: Role } => ({
-    role: s.role === "seller" || s.role === "courier" ? s.role : "buyer",
+    role: s["role"] === "seller" || s["role"] === "courier" ? s["role"] : "buyer",
   }),
   head: () => ({
     meta: [

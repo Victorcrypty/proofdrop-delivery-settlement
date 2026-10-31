@@ -72,7 +72,7 @@ export function Timeline({ status, deadlinePassed }: { status: SettlementStatus;
   return (
     <ol className="space-y-0">
       {STAGES.map((st, i) => {
-        const m = meta[states[i]];
+        const m = meta[states[i] ?? "waiting"];
         const Icon = m.icon;
         return (
           <li key={st.s} className="relative flex gap-3 pb-5 last:pb-0">

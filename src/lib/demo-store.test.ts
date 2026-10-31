@@ -25,13 +25,13 @@ it("keeps the same six-digit order code after a fresh store load (browser refres
     code = r.order.deliveryCode;
   });
   expect(code).toMatch(/^\d{6}$/);
-  expect(hook.result.current.orders[id].deliveryCode).toBe(code);
+  expect(hook.result.current.orders[id]?.deliveryCode).toBe(code);
   hook.unmount();
   vi.resetModules();
   const refreshed = await import("./demo-store");
   const reload = renderHook(() => refreshed.useDemo());
-  expect(reload.result.current.orders[id].deliveryCode).toBe(code);
-  expect(reload.result.current.orders[id].status).toBe("order_created");
-  expect(reload.result.current.orders[id].codeUsed).toBe(false);
+  expect(reload.result.current.orders[id]?.deliveryCode).toBe(code);
+  expect(reload.result.current.orders[id]?.status).toBe("order_created");
+  expect(reload.result.current.orders[id]?.codeUsed).toBe(false);
   reload.unmount();
 });
