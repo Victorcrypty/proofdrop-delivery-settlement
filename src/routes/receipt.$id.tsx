@@ -27,7 +27,7 @@ function Receipt() {
   return (
     <Shell>
       <article className="panel mx-auto max-w-2xl p-6 sm:p-10">
-        <div className="mb-6 flex items-start gap-2 rounded-xl bg-pending-soft p-4 text-sm text-pending">
+        <div className="mb-6 flex items-start gap-2 rounded-xl bg-pending-soft p-4 text-sm text-pending-deep">
           <FlaskConical className="mt-0.5 h-4 w-4 shrink-0" />
           This prototype uses simulated settlement data. Live BCH settlement will be connected in a later integration phase.
         </div>
