@@ -48,7 +48,7 @@ function Receipt() {
         <h2 className="mt-8 mb-3 font-semibold">Confirmation history</h2>
         <ol className="space-y-3">
           {o.events.map((e, i) => (
-            <li key={i} className="rounded-xl bg-muted p-3 text-sm">
+            <li key={i} className="rounded-xl bg-muted p-3 text-sm text-card-foreground">
               <div className="flex flex-wrap justify-between gap-2">
                 <span className="font-medium">{e.label}</span>
                 <span className="text-xs text-muted-foreground">{fmtDate(e.at)}</span>

@@ -28,10 +28,13 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-success-deep: var(--success-deep);
   --color-pending: var(--pending);
   --color-pending-soft: var(--pending-soft);
+  --color-pending-deep: var(--pending-deep);
   --color-destructive: var(--destructive);
   --color-destructive-soft: var(--destructive-soft);
+  --color-destructive-deep: var(--destructive-deep);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
