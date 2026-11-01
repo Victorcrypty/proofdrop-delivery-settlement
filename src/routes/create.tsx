@@ -117,7 +117,7 @@ function CreatePage() {
                 <option value="one_time_code">One-time delivery code</option>
               </select>
             </label>
-            <div className="rounded-xl bg-muted p-3 text-sm sm:col-span-2">
+            <div className="rounded-xl bg-muted p-3 text-sm text-card-foreground sm:col-span-2">
               Total to lock: <span className="font-mono font-semibold">{fmtBCH((toSats(f.item_bch) || 0) + (toSats(f.fee_bch) || 0))}</span>
             </div>
           </fieldset>
