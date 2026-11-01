@@ -199,7 +199,7 @@ function BuyerActions({ o, act }: { o: Order; act: (fn: (o: Order) => Promise<Re
 
 function RoleInfo({ o, role }: { o: Order; role: Role }) {
   const locked = o.status !== "settlement_released" && o.status !== "refunded" && o.status !== "order_created";
-  const box = "rounded-xl bg-muted p-4 text-sm";
+  const box = "rounded-xl bg-muted p-4 text-sm text-card-foreground";
   if (role === "seller")
     return (
       <div className={box}>

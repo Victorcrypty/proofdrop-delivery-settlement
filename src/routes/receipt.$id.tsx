@@ -27,7 +27,7 @@ function Receipt() {
   return (
     <Shell>
       <article className="panel mx-auto max-w-2xl p-6 sm:p-10">
-        <div className="mb-6 flex items-start gap-2 rounded-xl bg-pending-soft p-4 text-sm text-pending">
+        <div className="mb-6 flex items-start gap-2 rounded-xl bg-pending-soft p-4 text-sm text-pending-deep">
           <FlaskConical className="mt-0.5 h-4 w-4 shrink-0" />
           This prototype uses simulated settlement data. Live BCH settlement will be connected in a later integration phase.
         </div>
@@ -48,7 +48,7 @@ function Receipt() {
         <h2 className="mt-8 mb-3 font-semibold">Confirmation history</h2>
         <ol className="space-y-3">
           {o.events.map((e, i) => (
-            <li key={i} className="rounded-xl bg-muted p-3 text-sm">
+            <li key={i} className="rounded-xl bg-muted p-3 text-sm text-card-foreground">
               <div className="flex flex-wrap justify-between gap-2">
                 <span className="font-medium">{e.label}</span>
                 <span className="text-xs text-muted-foreground">{fmtDate(e.at)}</span>

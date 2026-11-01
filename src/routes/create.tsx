@@ -113,11 +113,11 @@ function CreatePage() {
             {L({ k: "deadline", label: "Delivery deadline", type: "datetime-local" })}
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium">Delivery confirmation method</span>
-              <select className="field" value="one_time_code" disabled>
+              <select className="field text-card-foreground" value="one_time_code" disabled>
                 <option value="one_time_code">One-time delivery code</option>
               </select>
             </label>
-            <div className="rounded-xl bg-muted p-3 text-sm sm:col-span-2">
+            <div className="rounded-xl bg-muted p-3 text-sm text-card-foreground sm:col-span-2">
               Total to lock: <span className="font-mono font-semibold">{fmtBCH((toSats(f.item_bch) || 0) + (toSats(f.fee_bch) || 0))}</span>
             </div>
           </fieldset>

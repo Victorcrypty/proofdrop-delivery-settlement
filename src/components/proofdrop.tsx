@@ -37,7 +37,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
 export function StatusBadge({ status }: { status: SettlementStatus }) {
   const tone =
-    status === "settlement_released" ? "bg-success-soft text-success" : status === "refunded" ? "bg-destructive-soft text-destructive" : "bg-pending-soft text-pending";
+    status === "settlement_released" ? "bg-success-soft text-success-deep" : status === "refunded" ? "bg-destructive-soft text-destructive-deep" : "bg-pending-soft text-pending-deep";
   return <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-semibold", tone)}>{STATUS_LABEL[status]}</span>;
 }
 
@@ -65,9 +65,9 @@ export function Timeline({ status, deadlinePassed }: { status: SettlementStatus;
   const states = stageStates(status, deadlinePassed);
   const meta = {
     complete: { icon: Check, cls: "bg-success text-destructive-foreground", text: "Complete" },
-    current: { icon: CircleDot, cls: "bg-pending-soft text-pending ring-2 ring-pending", text: "Current" },
+    current: { icon: CircleDot, cls: "bg-pending-soft text-pending-deep ring-2 ring-pending", text: "Current" },
     waiting: { icon: Circle, cls: "bg-muted text-muted-foreground", text: "Waiting" },
-    blocked: { icon: Ban, cls: "bg-destructive-soft text-destructive", text: "Blocked" },
+    blocked: { icon: Ban, cls: "bg-destructive-soft text-destructive-deep", text: "Blocked" },
   };
   return (
     <ol className="space-y-0">
@@ -89,7 +89,7 @@ export function Timeline({ status, deadlinePassed }: { status: SettlementStatus;
       })}
       {status === "refunded" && (
         <li className="mt-5 flex items-center gap-3" aria-label="Refunded">
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-destructive-soft text-destructive"><Ban className="h-4 w-4" /></span>
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-destructive-soft text-destructive-deep"><Ban className="h-4 w-4" /></span>
           <span className="text-sm font-semibold">Refunded</span>
           <span className="ml-auto text-xs text-muted-foreground">Simulated refund to buyer</span>
         </li>
@@ -123,12 +123,12 @@ export const REFUND_CONDITION = "If collection is not confirmed before the deadl
 export function Conditions() {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      <div className="rounded-xl bg-success-soft p-4 text-sm">
-        <div className="mb-1 flex items-center gap-2 font-semibold text-success"><ShieldCheck className="h-4 w-4" /> Release condition</div>
+      <div className="rounded-xl bg-success-soft p-4 text-sm text-card-foreground">
+        <div className="mb-1 flex items-center gap-2 font-semibold text-success-deep"><ShieldCheck className="h-4 w-4" /> Release condition</div>
         {RELEASE_CONDITION}
       </div>
-      <div className="rounded-xl bg-muted p-4 text-sm">
-        <div className="mb-1 flex items-center gap-2 font-semibold"><Lock className="h-4 w-4" /> Refund condition</div>
+      <div className="rounded-xl bg-muted p-4 text-sm text-card-foreground">
+        <div className="mb-1 flex items-center gap-2 font-semibold text-card-foreground"><Lock className="h-4 w-4" /> Refund condition</div>
         {REFUND_CONDITION}
       </div>
     </div>
@@ -137,7 +137,7 @@ export function Conditions() {
 
 export function Notice({ tone, children }: { tone: "blocked" | "ok"; children: ReactNode }) {
   return (
-    <div role="alert" className={cn("flex items-start gap-2 rounded-xl p-3 text-sm", tone === "blocked" ? "bg-destructive-soft text-destructive" : "bg-success-soft text-success")}>
+    <div role="alert" className={cn("flex items-start gap-2 rounded-xl p-3 text-sm", tone === "blocked" ? "bg-destructive-soft text-destructive-deep" : "bg-success-soft text-success-deep")}>
       {tone === "blocked" ? <Ban className="mt-0.5 h-4 w-4 shrink-0" /> : <Check className="mt-0.5 h-4 w-4 shrink-0" />}
       <span>{children}</span>
     </div>
