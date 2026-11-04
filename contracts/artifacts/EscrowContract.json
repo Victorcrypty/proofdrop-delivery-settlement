@@ -1,0 +1,113 @@
+{
+  "contractName": "EscrowContract",
+  "constructorInputs": [
+    {
+      "name": "buyerPk",
+      "type": "pubkey"
+    },
+    {
+      "name": "courierPk",
+      "type": "pubkey"
+    },
+    {
+      "name": "collectedLockingBytecode",
+      "type": "bytes"
+    },
+    {
+      "name": "buyerLockingBytecode",
+      "type": "bytes"
+    },
+    {
+      "name": "principal",
+      "type": "int"
+    },
+    {
+      "name": "refundDeadline",
+      "type": "int"
+    }
+  ],
+  "abi": [
+    {
+      "name": "collect",
+      "inputs": [
+        {
+          "name": "courierSig",
+          "type": "sig"
+        }
+      ]
+    },
+    {
+      "name": "refund",
+      "inputs": [
+        {
+          "name": "buyerSig",
+          "type": "sig"
+        }
+      ]
+    }
+  ],
+  "bytecode": "OP_6 OP_PICK OP_0 OP_NUMEQUAL OP_IF OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_7 OP_ROLL OP_ROT OP_CHECKSIGVERIFY OP_0 OP_OUTPUTBYTECODE OP_ROT OP_EQUALVERIFY OP_0 OP_OUTPUTVALUE OP_3 OP_ROLL OP_NUMEQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_2DROP OP_2DROP OP_1 OP_ELSE OP_6 OP_ROLL OP_1 OP_NUMEQUALVERIFY OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_6 OP_ROLL OP_SWAP OP_CHECKSIGVERIFY OP_4 OP_ROLL OP_CHECKLOCKTIMEVERIFY OP_DROP OP_0 OP_OUTPUTBYTECODE OP_3 OP_ROLL OP_EQUALVERIFY OP_0 OP_OUTPUTVALUE OP_3 OP_ROLL OP_NUMEQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUAL OP_NIP OP_NIP OP_ENDIF",
+  "source": "pragma cashscript ^0.14.0;\n\n// ProofDrop EscrowContract — LOCAL / CHIPNET PROTOTYPE ONLY. Not audited.\n// Funded by the buyer. Two spending paths:\n//   collect: courier signature -> exact principal to the fixed CollectedContract.\n//   refund:  buyer signature + absolute deadline -> exact principal to buyer.\n// Any extra inputs (fee payers) and extra outputs (their change) are allowed;\n// the contract only constrains output 0.\ncontract EscrowContract(\n    pubkey buyerPk,\n    pubkey courierPk,\n    bytes collectedLockingBytecode,\n    bytes buyerLockingBytecode,\n    int principal,\n    int refundDeadline\n) {\n    function collect(sig courierSig) {\n        // Single escrow input at index 0 so two escrow UTXOs can never share one output.\n        require(this.activeInputIndex == 0);\n        require(checkSig(courierSig, courierPk));\n        require(tx.outputs[0].lockingBytecode == collectedLockingBytecode);\n        require(tx.outputs[0].value == principal);\n        require(tx.outputs[0].tokenCategory == 0x);\n    }\n\n    function refund(sig buyerSig) {\n        require(this.activeInputIndex == 0);\n        require(checkSig(buyerSig, buyerPk));\n        // Absolute timelock (OP_CHECKLOCKTIMEVERIFY): unix timestamp in seconds.\n        require(tx.time >= refundDeadline);\n        require(tx.outputs[0].lockingBytecode == buyerLockingBytecode);\n        require(tx.outputs[0].value == principal);\n        require(tx.outputs[0].tokenCategory == 0x);\n    }\n}\n",
+  "fingerprint": "5aeae27512915cc2fefb40991066c09523f37217cab9fec07e808febacab74d5",
+  "debug": {
+    "bytecode": "5679009c63c0009d577a7bad00cd7b8800cc537a9d00d100886d6d5167567a519dc0009d567a7cad547ab17500cd537a8800cc537a9d00d10087777768",
+    "sourceMap": "17:4:24:5;;;;;19:16:19:37;:41::42;:8::44:1;20:25:20:35:0;;:37::46;:8::49:1;21:27:21:28:0;:16::45:1;:49::73:0;:8::75:1;22:27:22:28:0;:16::35:1;:39::48:0;;:8::50:1;23:27:23:28:0;:16::43:1;:47::49:0;:8::51:1;17:37:24:5;;;:4;26::34::0;;;;27:16:27:37;:41::42;:8::44:1;28:25:28:33:0;;:35::42;:8::45:1;30:27:30:41:0;;:8::43:1;;31:27:31:28:0;:16::45:1;:49::69:0;;:8::71:1;32:27:32:28:0;:16::35:1;:39::48:0;;:8::50:1;33:27:33:28:0;:16::43:1;:47::49:0;:8::51:1;26:34:34:5;;9:0:35:1",
+    "logs": [],
+    "requires": [
+      {
+        "ip": 13,
+        "line": 19
+      },
+      {
+        "ip": 17,
+        "line": 20
+      },
+      {
+        "ip": 21,
+        "line": 21
+      },
+      {
+        "ip": 26,
+        "line": 22
+      },
+      {
+        "ip": 30,
+        "line": 23
+      },
+      {
+        "ip": 41,
+        "line": 27
+      },
+      {
+        "ip": 45,
+        "line": 28
+      },
+      {
+        "ip": 48,
+        "line": 30
+      },
+      {
+        "ip": 54,
+        "line": 31
+      },
+      {
+        "ip": 59,
+        "line": 32
+      },
+      {
+        "ip": 64,
+        "line": 33
+      }
+    ],
+    "sourceTags": "58:59:sc"
+  },
+  "compiler": {
+    "name": "cashc",
+    "version": "0.14.0",
+    "options": {
+      "enforceFunctionParameterTypes": true,
+      "enforceLocktimeGuard": true
+    }
+  },
+  "updatedAt": "2026-11-04T15:00:19.897Z"
+}
