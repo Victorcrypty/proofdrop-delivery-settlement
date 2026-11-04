@@ -1,7 +1,7 @@
 // ALL TRANSACTIONS IN THIS FILE ARE LOCAL ONLY (MockNetworkProvider + local VM debug).
 // Nothing is broadcast. Keys below are throwaway test keys and hold no funds.
 import { describe, expect, it } from "bun:test";
-import { MockNetworkProvider, SignatureTemplate, randomUtxo, type Utxo } from "cashscript";
+import { FailedRequireError, MockNetworkProvider, SignatureTemplate, randomUtxo, type Utxo } from "cashscript";
 import { binToHex, hash160, hexToBin, secp256k1 } from "@bitauth/libauth";
 import { artifacts, buildContracts, deserializeParams, relativeTimeAge, serializeParams, validateParams, SECONDS_48H, DUST_LIMIT, type ProofDropParams } from "../src/params";
 import { buildCollect, buildFallback, buildRefund, buildRelease, evaluateLocally, type FeeInput } from "../src/tx";
@@ -28,7 +28,7 @@ const collectedLb = hexToBin(collected.lockingBytecode);
 const utxo = (sats: bigint, lb: string | Uint8Array = feePayer.lb): Utxo => ({ ...randomUtxo(), satoshis: sats, lockingBytecode: typeof lb === "string" ? lb : binToHex(lb) } as Utxo);
 const fee = (): FeeInput => ({ utxo: utxo(10_000n), signer: feePayer.sig, changeTo: feePayer.lb, fee: 1_000n });
 const passes = (tb: Parameters<typeof evaluateLocally>[0]) => expect(() => evaluateLocally(tb)).not.toThrow();
-const fails = (tb: Parameters<typeof evaluateLocally>[0]) => { try { evaluateLocally(tb); } catch (e) { console.log("REJECT", (e as Error).constructor.name, (e as Error).message.split("\n")[0].slice(0, 110)); return; } throw new Error("expected rejection"); };
+const fails = (tb: Parameters<typeof evaluateLocally>[0]) => expect(() => evaluateLocally(tb)).toThrow(FailedRequireError);
 
 const collectTx = (o: Partial<Parameters<typeof buildCollect>[0]> = {}) =>
   buildCollect({ provider, escrow, escrowUtxo: utxo(principal, escrow.lockingBytecode), courier: courier.sig, to: collectedLb, amount: principal, fee: fee(), ...o });

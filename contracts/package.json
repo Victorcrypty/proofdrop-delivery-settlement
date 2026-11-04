@@ -6,5 +6,9 @@
     "@bitauth/libauth": "^3.0.0",
     "cashc": "^0.14.0",
     "cashscript": "^0.14.0"
+  },
+  "scripts": {
+    "compile": "bun scripts/compile.ts",
+    "test": "bun test ./test"
   }
 }
