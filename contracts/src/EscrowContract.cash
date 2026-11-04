@@ -1,0 +1,35 @@
+pragma cashscript ^0.14.0;
+
+// ProofDrop EscrowContract — LOCAL / CHIPNET PROTOTYPE ONLY. Not audited.
+// Funded by the buyer. Two spending paths:
+//   collect: courier signature -> exact principal to the fixed CollectedContract.
+//   refund:  buyer signature + absolute deadline -> exact principal to buyer.
+// Any extra inputs (fee payers) and extra outputs (their change) are allowed;
+// the contract only constrains output 0.
+contract EscrowContract(
+    pubkey buyerPk,
+    pubkey courierPk,
+    bytes collectedLockingBytecode,
+    bytes buyerLockingBytecode,
+    int principal,
+    int refundDeadline
+) {
+    function collect(sig courierSig) {
+        // Single escrow input at index 0 so two escrow UTXOs can never share one output.
+        require(this.activeInputIndex == 0);
+        require(checkSig(courierSig, courierPk));
+        require(tx.outputs[0].lockingBytecode == collectedLockingBytecode);
+        require(tx.outputs[0].value == principal);
+        require(tx.outputs[0].tokenCategory == 0x);
+    }
+
+    function refund(sig buyerSig) {
+        require(this.activeInputIndex == 0);
+        require(checkSig(buyerSig, buyerPk));
+        // Absolute timelock (OP_CHECKLOCKTIMEVERIFY): unix timestamp in seconds.
+        require(tx.time >= refundDeadline);
+        require(tx.outputs[0].lockingBytecode == buyerLockingBytecode);
+        require(tx.outputs[0].value == principal);
+        require(tx.outputs[0].tokenCategory == 0x);
+    }
+}

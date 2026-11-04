@@ -1,0 +1,43 @@
+pragma cashscript ^0.14.0;
+
+// ProofDrop CollectedContract — LOCAL / CHIPNET PROTOTYPE ONLY. Not audited.
+// Created by EscrowContract.collect. There is intentionally NO refund path.
+//   release:         buyer signature -> exact seller amount + exact courier fee.
+//   fallbackRelease: relative timelock (tx.age, OP_CHECKSEQUENCEVERIFY) measured
+//                    from when this UTXO was created (collection) + seller AND
+//                    courier signatures -> the same fixed payouts.
+contract CollectedContract(
+    pubkey buyerPk,
+    pubkey sellerPk,
+    pubkey courierPk,
+    bytes sellerLockingBytecode,
+    bytes courierLockingBytecode,
+    int sellerAmount,
+    int courierFee,
+    int fallbackAge
+) {
+    function release(sig buyerSig) {
+        require(this.activeInputIndex == 0);
+        require(checkSig(buyerSig, buyerPk));
+        require(tx.outputs[0].lockingBytecode == sellerLockingBytecode);
+        require(tx.outputs[0].value == sellerAmount);
+        require(tx.outputs[0].tokenCategory == 0x);
+        require(tx.outputs[1].lockingBytecode == courierLockingBytecode);
+        require(tx.outputs[1].value == courierFee);
+        require(tx.outputs[1].tokenCategory == 0x);
+    }
+
+    function fallbackRelease(sig sellerSig, sig courierSig) {
+        require(this.activeInputIndex == 0);
+        // fallbackAge carries the BIP68 time-type flag (bit 22) + 512-second units.
+        require(tx.age >= fallbackAge);
+        require(checkSig(sellerSig, sellerPk));
+        require(checkSig(courierSig, courierPk));
+        require(tx.outputs[0].lockingBytecode == sellerLockingBytecode);
+        require(tx.outputs[0].value == sellerAmount);
+        require(tx.outputs[0].tokenCategory == 0x);
+        require(tx.outputs[1].lockingBytecode == courierLockingBytecode);
+        require(tx.outputs[1].value == courierFee);
+        require(tx.outputs[1].tokenCategory == 0x);
+    }
+}
