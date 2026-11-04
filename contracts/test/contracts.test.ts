@@ -25,19 +25,19 @@ const provider = new MockNetworkProvider();
 const { escrow, collected, principal } = buildContracts(params, provider);
 const collectedLb = hexToBin(collected.lockingBytecode);
 
-const utxo = (sats: bigint): Utxo => ({ ...randomUtxo(), satoshis: sats });
+const utxo = (sats: bigint, lb: string | Uint8Array = feePayer.lb): Utxo => ({ ...randomUtxo(), satoshis: sats, lockingBytecode: typeof lb === "string" ? lb : binToHex(lb) } as Utxo);
 const fee = (): FeeInput => ({ utxo: utxo(10_000n), signer: feePayer.sig, changeTo: feePayer.lb, fee: 1_000n });
 const passes = (tb: Parameters<typeof evaluateLocally>[0]) => expect(() => evaluateLocally(tb)).not.toThrow();
 const fails = (tb: Parameters<typeof evaluateLocally>[0]) => expect(() => evaluateLocally(tb)).toThrow();
 
 const collectTx = (o: Partial<Parameters<typeof buildCollect>[0]> = {}) =>
-  buildCollect({ provider, escrow, escrowUtxo: utxo(principal), courier: courier.sig, to: collectedLb, amount: principal, fee: fee(), ...o });
+  buildCollect({ provider, escrow, escrowUtxo: utxo(principal, escrow.lockingBytecode), courier: courier.sig, to: collectedLb, amount: principal, fee: fee(), ...o });
 const refundTx = (o: Partial<Parameters<typeof buildRefund>[0]> = {}) =>
-  buildRefund({ provider, escrow, escrowUtxo: utxo(principal), buyer: buyer.sig, to: buyer.lb, amount: principal, locktime: DEADLINE, fee: fee(), ...o });
+  buildRefund({ provider, escrow, escrowUtxo: utxo(principal, escrow.lockingBytecode), buyer: buyer.sig, to: buyer.lb, amount: principal, locktime: DEADLINE, fee: fee(), ...o });
 const releaseTx = (o: Partial<Parameters<typeof buildRelease>[0]> = {}) =>
-  buildRelease({ provider, collected, utxo: utxo(principal), buyer: buyer.sig, seller: { to: seller.lb, amount: params.sellerAmount }, courier: { to: courier.lb, amount: params.courierFee }, fee: fee(), ...o });
+  buildRelease({ provider, collected, utxo: utxo(principal, collected.lockingBytecode), buyer: buyer.sig, seller: { to: seller.lb, amount: params.sellerAmount }, courier: { to: courier.lb, amount: params.courierFee }, fee: fee(), ...o });
 const fallbackTx = (o: Partial<Parameters<typeof buildFallback>[0]> = {}) =>
-  buildFallback({ provider, collected, utxo: utxo(principal), seller: seller.sig, courier: courier.sig, sequence: age.encoded, sellerOut: { to: seller.lb, amount: params.sellerAmount }, courierOut: { to: courier.lb, amount: params.courierFee }, fee: fee(), ...o });
+  buildFallback({ provider, collected, utxo: utxo(principal, collected.lockingBytecode), seller: seller.sig, courier: courier.sig, sequence: age.encoded, sellerOut: { to: seller.lb, amount: params.sellerAmount }, courierOut: { to: courier.lb, amount: params.courierFee }, fee: fee(), ...o });
 
 describe("[local] compilation", () => {
   it("compiles both contracts with the expected ABI", () => {
