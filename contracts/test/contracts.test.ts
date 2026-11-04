@@ -28,7 +28,7 @@ const collectedLb = hexToBin(collected.lockingBytecode);
 const utxo = (sats: bigint, lb: string | Uint8Array = feePayer.lb): Utxo => ({ ...randomUtxo(), satoshis: sats, lockingBytecode: typeof lb === "string" ? lb : binToHex(lb) } as Utxo);
 const fee = (): FeeInput => ({ utxo: utxo(10_000n), signer: feePayer.sig, changeTo: feePayer.lb, fee: 1_000n });
 const passes = (tb: Parameters<typeof evaluateLocally>[0]) => expect(() => evaluateLocally(tb)).not.toThrow();
-const fails = (tb: Parameters<typeof evaluateLocally>[0]) => expect(() => evaluateLocally(tb)).toThrow();
+const fails = (tb: Parameters<typeof evaluateLocally>[0]) => { try { evaluateLocally(tb); } catch (e) { console.log("REJECT", (e as Error).constructor.name, (e as Error).message.split("\n")[0].slice(0, 110)); return; } throw new Error("expected rejection"); };
 
 const collectTx = (o: Partial<Parameters<typeof buildCollect>[0]> = {}) =>
   buildCollect({ provider, escrow, escrowUtxo: utxo(principal, escrow.lockingBytecode), courier: courier.sig, to: collectedLb, amount: principal, fee: fee(), ...o });
