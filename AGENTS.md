@@ -14,3 +14,4 @@
 - Generate the demo handoff code in settlement creation, preserve it in later transitions, and gate its rendered value by Seller role; this keeps persistence and visibility independent of navigation.
 - Keep refund eligibility in the settlement module and the prototype deadline override in the local demo store; preserve the agreed deadline so UI explanations and adapter guards share the same rule without pretending to alter a blockchain contract.
 - Text placed on pale surfaces (cards, notices, badges, disabled controls) must set an explicit dark color — `card-foreground` for body copy, a `*-deep` accent token for headings and icons — because the page-level foreground is near-white and would otherwise be inherited and become unreadable.
+- On-chain prototype contracts live in isolated `contracts/` (own package.json, bun test, excluded from app vitest/tsconfig); the app must not import them until a real adapter is built behind `SettlementAdapter`.
