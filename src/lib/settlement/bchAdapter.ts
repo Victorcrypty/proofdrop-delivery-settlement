@@ -1,10 +1,10 @@
 // LIVE BCH ADAPTER — broadcasts real transactions via CashScript + Electrum.
 // Demo custody: the app holds the three party keys per order so one browser can
 // play buyer, seller and courier. Disclosed in the submission writeup.
-import { Contract, ElectrumNetworkProvider, SignatureTemplate, TransactionBuilder, type Utxo } from "cashscript";
+import { ElectrumNetworkProvider, SignatureTemplate, TransactionBuilder, type Utxo } from "cashscript";
 import { generatePrivateKey, secp256k1, hash160, hexToBin, binToHex } from "@bitauth/libauth";
-import { artifacts, serializeParams, type ProofDropParams } from "../../contracts/src/params";
-import { buildCollect, buildRelease, buildRefund } from "../../contracts/src/tx";
+import { buildContracts, serializeParams, type ProofDropParams } from "./contractKit";
+import { buildCollect, buildRelease, buildRefund } from "../../../contracts/src/tx";
 import type { Actor, Order, OrderInput, Result, SettlementAdapter, SettlementStatus } from "./types";
 import { STATUS_ORDER } from "./types";
 import { refundEligibility } from "./refund";
@@ -48,12 +48,6 @@ function p2pkhBytecode(pk: Uint8Array): Uint8Array {
   return hexToBin("76a914" + binToHex(hash160(pk)) + "88ac");
 }
 
-function addressOf(privHex: string, network: "chipnet" | "mainnet"): string {
-  // minimal cashaddr encoder is avoided; we only need it for display, so we
-  // keep bytecode and use the treasury address the user funded instead.
-  return privHex; // placeholder, addresses come from contract objects
-}
-
 function buildFromState(state: LiveState) {
   const provider = getProvider(state.network);
   const p: ProofDropParams = {
@@ -68,24 +62,8 @@ function buildFromState(state: LiveState) {
     refundDeadline: BigInt(state.params.refundDeadline),
     fallbackAge: BigInt(state.params.fallbackAge),
   };
-  const collected = new Contract(artifacts.collected, [
-    p.buyerPk, p.sellerPk, p.courierPk, p.sellerLockingBytecode, p.courierLockingBytecode,
-    p.sellerAmount, p.courierFee, p.fallbackAge,
-  ], { provider, addressType: "p2sh32" });
-  const principal = p.sellerAmount + p.courierFee;
-  const escrow = new Contract(artifacts.escrow, [
-    p.buyerPk, p.courierPk, hexToBin(collected.lockingBytecode), p.buyerLockingBytecode, principal, p.refundDeadline,
-  ], { provider, addressType: "p2sh32" });
-  return { provider, p, collected, escrow, principal };
-}
-
-async function bestUtxo(provider: ElectrumNetworkProvider, privHex: string, bytecode: Uint8Array, minSats: bigint): Promise<Utxo | null> {
-  // the funder key's address is derived by the treasury setup; we keep a
-  // parallel record of its address at treasury setup time
-  const addr = localStorage.getItem("proofdrop.live.treasury." + privHex.slice(0, 16));
-  if (!addr) return null;
-  const utxos = await provider.getUtxos(addr);
-  return utxos.sort((a, b) => Number(b.satoshis) - Number(a.satoshis)).find((u) => u.satoshis > minSats) ?? null;
+  const built = buildContracts(p, provider);
+  return { provider, p, collected: built.collected, escrow: built.escrow, principal: built.principal };
 }
 
 const ev = (actor: Actor, label: string, txid?: string) => ({ at: new Date().toISOString(), actor, label, txid });
@@ -138,7 +116,7 @@ state.collectedAddress = built.collected.address;
 
 const order: Order = {
   ...input,
-  id: `PD-${rand(6)}`,
+  id: "PD-" + rand(6),
   status: "initial",
   createdAt: new Date().toISOString(),
   dispatched: false,
@@ -152,7 +130,7 @@ return {
   order: {
     ...order,
     status: "order_created",
-    events: [ev("buyer", `Order created (live ${network}). Escrow: ${state.escrowAddress}`)],
+    events: [ev("buyer", "Order created (live " + network + "). Escrow: " + state.escrowAddress)],
   },
 };
 
@@ -172,7 +150,7 @@ if (!treasuryAddr) return fail("Treasury address not set up.");
 const utxos = await provider.getUtxos(treasuryAddr);
 const total = utxos.reduce((s, u) => s + u.satoshis, 0n);
 const FEE = 2000n;
-if (total < principal + FEE) return fail(`Treasury has ${total} sats; needs ${principal + FEE}.`);
+if (total < principal + FEE) return fail("Treasury has " + total + " sats; needs " + (principal + FEE) + ".");
 
 const signer = new SignatureTemplate(funderPriv);
 const tb = new TransactionBuilder({ provider });
@@ -343,6 +321,3 @@ return {
 
   getSettlementStatus: (order) => order.status,
 };
-
-// Unused placeholder to keep the addressOf helper honest if reused later.
-void addressOf;
