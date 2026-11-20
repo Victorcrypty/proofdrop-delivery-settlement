@@ -1,10 +1,10 @@
 // Single switch point for the settlement backend.
 // Replace mockAdapter with a real BCH / XO adapter implementing SettlementAdapter.
 import { mockAdapter } from "./mockAdapter";
-import type { SettlementAdapter } from "./types";
+import { bchAdapter } from "./bchAdapter";
 
 export const settlement: SettlementAdapter = mockAdapter;
-export * from "./types";
+export const settlement: SettlementAdapter = bchAdapter;
 export { refundEligibility } from "./refund";
 
 export const toSats = (bch: string) => Math.round(parseFloat(bch || "0") * 1e8);
