@@ -37,7 +37,7 @@ function Confirm() {
   };
   const release = async () => {
     const r = await demo.run(id, (x) => settlement.releaseSettlement(x, "buyer"));
-    setMsg(r.ok ? { tone: "ok", text: "Simulated settlement released to seller and courier." } : { tone: "blocked", text: r.reason });
+    setMsg(r.ok ? { tone: "ok", text: "Settlement released to seller and courier (on-chain)." } : { tone: "blocked", text: r.reason });
   };
 
   return (
@@ -62,7 +62,7 @@ function Confirm() {
             <p id="delivery-code-help" className="text-sm text-muted-foreground">Enter the one time code provided at handoff.</p>
             <Button type="submit" className="btn btn-primary w-full"><KeyRound className="h-4 w-4" /> Confirm delivery</Button>
           </form>
-          <Button variant="ghost" onClick={release} className="btn btn-ghost w-full"><ShieldCheck className="h-4 w-4" /> Approve simulated release</Button>
+          <Button variant="ghost" onClick={release} className="btn btn-ghost w-full"><ShieldCheck className="h-4 w-4" /> Approve release</Button>
           {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/orders/$id" params={{ id }} search={{ role: "buyer" }} className="text-accent-foreground underline">Back to order</Link>

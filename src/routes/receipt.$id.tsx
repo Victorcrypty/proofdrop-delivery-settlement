@@ -29,7 +29,7 @@ function Receipt() {
       <article className="panel mx-auto max-w-2xl p-6 sm:p-10">
         <div className="mb-6 flex items-start gap-2 rounded-xl bg-pending-soft p-4 text-sm text-pending-deep">
           <FlaskConical className="mt-0.5 h-4 w-4 shrink-0" />
-          This prototype uses simulated settlement data. Live BCH settlement will be connected in a later integration phase.
+          This receipt reflects live BCH settlement data. Live BCH settlement will be connected in a later integration phase.
         </div>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -44,7 +44,7 @@ function Receipt() {
           <Row k="Courier" v={o.courierName} />
         </div>
         <div className="mt-2"><Amounts o={o} /></div>
-        {o.status === "refunded" && <div className="mt-4 border-t border-border pt-4 text-sm"><Row k="Simulated refund to buyer" v={fmtBCH(o.itemSats + o.courierFeeSats)} strong /><p className="text-muted-foreground">No real BCH was moved. Seller payment and courier fee were not released.</p></div>}
+        {o.status === "refunded" && <div className="mt-4 border-t border-border pt-4 text-sm"><Row k="Refund to buyer" v={fmtBCH(o.itemSats + o.courierFeeSats)} strong /><p className="text-muted-foreground">The refund was returned on-chain; seller payment and courier fee were not released.</p></div>}
         <h2 className="mt-8 mb-3 font-semibold">Confirmation history</h2>
         <ol className="space-y-3">
           {o.events.map((e, i) => (

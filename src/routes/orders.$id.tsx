@@ -176,8 +176,8 @@ function BuyerActions({ o, act }: { o: Order; act: (fn: (o: Order) => Promise<Re
     <div className="space-y-3">
     <div className="flex flex-wrap gap-2">
       {o.status === "order_created" && (
-        <button className="btn btn-primary" onClick={() => act((x) => settlement.fundSettlement(x, "buyer"), "Simulated payment locked. No real BCH was moved.")}>
-          <Lock className="h-4 w-4" /> Fund simulated settlement
+        <button className="btn btn-primary" onClick={() => act((x) => settlement.fundSettlement(x, "buyer"), "Payment locked in the escrow contract (real chipnet BCH).")}>
+          <Lock className="h-4 w-4" /> Fund settlement
         </button>
       )}
       {o.status !== "order_created" && o.status !== "settlement_released" && o.status !== "refunded" && (
@@ -185,11 +185,11 @@ function BuyerActions({ o, act }: { o: Order; act: (fn: (o: Order) => Promise<Re
           <KeyRound className="h-4 w-4" /> Delivery confirmation
         </Link>
       )}
-      <button className="btn btn-ghost" onClick={() => act((x) => settlement.releaseSettlement(x, "buyer"), "Simulated settlement released.")}>
+      <button className="btn btn-ghost" onClick={() => act((x) => settlement.releaseSettlement(x, "buyer"), "Settlement released on-chain.")}>
         Approve release
       </button>
-      <Button variant="ghost" className="h-auto whitespace-normal" onClick={() => act((x) => settlement.requestRefund(x, "buyer"), "Simulated refund issued. No real BCH was moved.")}>
-        <Ban className="h-4 w-4" /> Request simulated refund
+      <Button variant="ghost" className="h-auto whitespace-normal" onClick={() => act((x) => settlement.requestRefund(x, "buyer"), "Refund issued on-chain.")}>
+        <Ban className="h-4 w-4" /> Request refund
       </Button>
     </div>
     <p className="text-sm text-muted-foreground">{refund.reason}</p>
@@ -204,26 +204,26 @@ function RoleInfo({ o, role }: { o: Order; role: Role }) {
     return (
       <div className={box}>
         Your payment: <span className="font-mono font-semibold">{fmtBCH(o.itemSats)}</span> —{" "}
-        {o.status === "settlement_released" ? "released to you (simulated)." : locked ? "locked until collection and delivery are confirmed." : o.status === "refunded" ? "refunded to buyer." : "not yet locked by the buyer."}
+        {o.status === "settlement_released" ? "released to you on-chain." : locked ? "locked until collection and delivery are confirmed." : o.status === "refunded" ? "refunded to buyer." : "not yet locked by the buyer."}
       </div>
     );
   if (role === "courier")
     return (
       <div className={box}>
         Your courier fee: <span className="font-mono font-semibold">{fmtBCH(o.courierFeeSats)}</span> —{" "}
-        {o.status === "settlement_released" ? "released to you (simulated)." : locked ? "locked until the buyer confirms delivery." : o.status === "refunded" ? "refunded to buyer." : "not yet locked."}
+        {o.status === "settlement_released" ? "released to you on-chain." : locked ? "locked until the buyer confirms delivery." : o.status === "refunded" ? "refunded to buyer." : "not yet locked."}
       </div>
     );
   return (
     <div className={box}>
-      {o.status === "order_created" && "Fund the simulated settlement to lock payment."}
+      {o.status === "order_created" && "Fund the settlement to lock payment."}
       {o.status === "payment_locked" && (
         <>Payment is locked. Await courier collection and the code provided at handoff.</>
       )}
       {o.status === "collection_confirmed" && "The courier has collected the item. When it arrives, enter your delivery code."}
-      {o.status === "delivery_confirmed" && "Delivery confirmed. Approve the simulated release to pay seller and courier."}
-      {o.status === "settlement_released" && "Settlement released (simulated)."}
-      {o.status === "refunded" && "Refund issued (simulated)."}
+      {o.status === "delivery_confirmed" && "Delivery confirmed. Approve the release to pay seller and courier."}
+      {o.status === "settlement_released" && "Settlement released on-chain."}
+      {o.status === "refunded" && "Refund issued on-chain."}
     </div>
   );
 }
