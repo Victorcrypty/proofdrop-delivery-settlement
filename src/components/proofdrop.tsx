@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Check, Circle, CircleDot, Lock, Package, ShieldCheck, Ban, FlaskConical } from "lucide-react";
+import { Check, Circle, CircleDot, Lock, ShieldCheck, Ban, FlaskConical } from "lucide-react";
 import type { ReactNode } from "react";
 import { fmtBCH, STATUS_ORDER, type Order, type SettlementStatus } from "@/lib/settlement";
 import { cn } from "@/lib/utils";
@@ -14,19 +14,27 @@ export const STATUS_LABEL: Record<SettlementStatus, string> = {
   refunded: "Refunded",
 };
 
+function ShieldDrop({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
+      <rect x="4" y="4" width="56" height="56" rx="14" fill="#0b3d2e" />
+      <path d="M32 14c6 9 11 15.5 11 22a11 11 0 0 1-22 0c0-6.5 5-13 11-22z" fill="#4ade80" />
+      <rect x="14" y="46" width="36" height="4" rx="2" fill="#4ade80" />
+    </svg>
+  );
+}
+
 export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
       <header className="border-b border-foreground/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <Package className="h-4 w-4" />
-            </span>
+            <ShieldDrop className="h-8 w-8 rounded-lg" />
             ProofDrop
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-pending/50 px-2.5 py-1 text-xs font-medium text-pending-soft">
-            <FlaskConical className="h-3.5 w-3.5" /> Demo — chipnet settlement
+            <FlaskConical className="h-3.5 w-3.5" /> Live — chipnet settlement
           </span>
         </div>
       </header>
