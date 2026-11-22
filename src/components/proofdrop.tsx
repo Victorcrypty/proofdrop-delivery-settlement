@@ -26,7 +26,7 @@ export function Shell({ children }: { children: ReactNode }) {
             ProofDrop
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-pending/50 px-2.5 py-1 text-xs font-medium text-pending-soft">
-            <FlaskConical className="h-3.5 w-3.5" /> Demo — simulated settlement
+            <FlaskConical className="h-3.5 w-3.5" /> Demo — chipnet settlement
           </span>
         </div>
       </header>
@@ -91,7 +91,7 @@ export function Timeline({ status, deadlinePassed }: { status: SettlementStatus;
         <li className="mt-5 flex items-center gap-3" aria-label="Refunded">
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-destructive-soft text-destructive-deep"><Ban className="h-4 w-4" /></span>
           <span className="text-sm font-semibold">Refunded</span>
-          <span className="ml-auto text-xs text-muted-foreground">Simulated refund to buyer</span>
+          <span className="ml-auto text-xs text-muted-foreground">Refund to buyer</span>
         </li>
       )}
     </ol>
